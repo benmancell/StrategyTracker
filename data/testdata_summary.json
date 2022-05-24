@@ -1,0 +1,47 @@
+[
+        {
+            "number": "1",
+            "id": "1.1.20",
+            "goal": "Wellness",
+            "strategy": "Office Yoga",
+            "summary": "Implement a weekly yoga lesson that 50% of the staff attend.",
+            "source": "Vision Document",
+            "owner": "Alex Fisher",
+            "bureau": "Legal & Regulatory Affairs",
+            "start": "1/21/20",
+            "due": "3/3/20",
+            "status": "In Progress",
+            "percentCompleteBar": "78",
+            "percentComplete": "78%"
+        },
+        {
+            "number": "2",
+            "id": "1.2.20",
+            "goal": "Wellness",
+            "strategy": "Mindfulness",
+            "summary": "Have 100% of the meetings that are scheduled for 1 hour or more begin with 5 minutes of meditation.",
+            "source": "Vision Document",
+            "owner": "Sharon Neill",
+            "bureau": "Finance and Administration",
+            "start": "1/1/20",
+            "due": "3/25/20",
+            "status": "In Progress",
+            "percentCompleteBar": "55",
+            "percentComplete": "55%"
+        },
+        {
+            "number": "3",
+            "id": "2.1.20",
+            "goal": "Social",
+            "strategy": "Informal engagement",
+            "summary": "Create opportunities for staff to form informal relationships with their colleagues.",
+            "source": "Local Law",
+            "owner": "Tim Hogan",
+            "bureau": "Enforcement",
+            "start": "1/5/20",
+            "due": "4/1/20",
+            "status": "Behind Schedule",
+            "percentCompleteBar": "5",
+            "percentComplete": "5%"
+        }
+]
