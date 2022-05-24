@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
+  <title>DOB Strategy Tracker</title>
+  <link rel="stylesheet" href="../slick.grid.css" type="text/css"/>
+  <link rel="stylesheet" href="../css/smoothness/jquery-ui.css" type="text/css"/>
+  <link rel="stylesheet" href="examples.css" type="text/css"/>
+  <style>
+    .cell-title {
+      font-weight: bold;
+    }
+
+    .cell-effort-driven {
+      text-align: center;
+    }
+	.logo {
+		background-image: url('data/dob_logo.png');
+		background-repeat: no-repeat;
+		background-position: center;
+		float: right;
+		background-size: 70px;
+		height: 50px;
+		width: 110px;
+	}
+	.green {
+		background-color: #1DAC1A;
+	}
+	.yellow {
+		background-color: #DCF037;
+	}
+	.blue {
+		background-color: #37ACF0;
+	}
+	.red {
+		background-color: #F03737;
+	}
+	.ui-state-default{
+		background: #dbdbdb;
+		font-weight: bold;
+	}
+  </style>
+</head>
+<body>
+<div style="position:relative">
+  <div style="width:1900px;">
+	<div class="grid-header" id="grid-header-div" style="width:100%">
+	<a class="logo" href="https://www1.nyc.gov/site/buildings/index.page" target="_blank"> </a>
+		<label>DOB Strategy Tracker Draft</label>
+	</div>
+	<div class="grid-header2" id="grid-header-div2" style="width:100%">
+		<label>Last Updated: <span id="today"></span></label>
+	</div>
+    <div id="myGrid" style="width:100%;height:340px;"></div>
+  </div>
+</div>
+
+<script src="../lib/firebugx.js"></script>
+
+<script src="../lib/jquery-1.12.4.min.js"></script>
+<script src="../lib/jquery-ui.min.js"></script>
+<script src="../lib/jquery.event.drag-2.3.0.js"></script>
+
+<script src="../slick.core.js"></script>
+<script src="../plugins/slick.cellrangedecorator.js"></script>
+<script src="../plugins/slick.cellrangeselector.js"></script>
+<script src="../plugins/slick.cellselectionmodel.js"></script>
+<script src="../slick.formatters.js"></script>
+<script src="../slick.editors.js"></script>
+<script src="../slick.grid.js"></script>
+<script src="../plugins/slick.autotooltips.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.9/d3.min.js"></script>
+
+
+<script>
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1;
+var yyyy = today.getFullYear();
+today = mm + '/' + dd + '/' + yyyy;	
+d3.select("#today").html(today);
+	
+  var grid; 
+  
+  var data = [];
+  
+  var columns = [
+    {id: "num", name: "#", field: "number", width: 20, cssClass: "cell-title", editor: Slick.Editors.Text},
+    {id: "id", name: "ID", field: "id", width: 60, editor: Slick.Editors.LongText},
+    {id: "goal", name: "Goal", field: "goal", editor: Slick.Editors.Text},
+	{id: "strategy", name: "Strategy Name", field: "strategy", width: 300, editor: Slick.Editors.Text},
+	{id: "summary", name: "Summary/Objective", field: "summary", width: 300, editor: Slick.Editors.Text},
+	{id: "source", name: "Source", field: "source", width: 200, editor: Slick.Editors.Text},
+	{id: "owner", name: "Owner", field: "owner", width: 200, editor: Slick.Editors.Text},
+	{id: "bureau", name: "Bureau", field: "bureau", width: 200, editor: Slick.Editors.Text},
+	{id: "milestones", name: "Milestones", field: "milestones", width: 400, editor: Slick.Editors.Text},
+	{id: "milestoneOwner", name: "Milestone Owner", field: "milestoneOwner", width: 200, editor: Slick.Editors.Text},
+    {id: "start", name: "Start Date", field: "start", minWidth: 60, editor: Slick.Editors.Date},
+    {id: "due", name: "Due Date", field: "due", minWidth: 60, editor: Slick.Editors.Date},
+	{id: "status", name: "Status", field: "status", width: 150, editor: Slick.Editors.Text, formatter: statusFormatter},
+	{id: "%bar", name: "% Completed", field: "percentCompleteBar", width: 100, resizable: false, formatter: Slick.Formatters.PercentCompleteBar, editor: Slick.Editors.PercentComplete},
+	{id: "%", name: "", field: "percentComplete", width: 50, editor: Slick.Editors.Text},
+	{id: "metrics", name: "Metrics/Reporting", field: "metrics", width: 150, editor: Slick.Editors.Text},
+	{id: "issues", name: "Issues/Risks", field: "issues", width: 500, editor: Slick.Editors.Text}
+  ];
+  var options = {
+    editable: false,
+    enableAddRow: false,
+    enableCellNavigation: true,
+    asyncEditorLoading: false,
+    autoEdit: false,
+	autoHeight: true
+  };
+
+  function statusFormatter(row, cell, value, columnDef, dataContext) {
+	var rtn = { text: value, removeClasses: 'green yellow blue red'};
+	if (value != null || value !== "") {
+		if (value == "In Progress") {
+			rtn.addClasses = "blue";
+		} else if (value == "Not Started") {
+			rtn.addClasses = "yellow";
+		} else if (value == "Complete") {
+			rtn.addClasses = "green";
+		} else {
+			rtn.addClasses = "red";
+		}
+	}
+	return rtn;
+  }
+  
+  
+  $(function () {
+	$.getJSON("data/testdata.json", function(data){
+		grid = new Slick.Grid("#myGrid", data, columns, options);
+
+		grid.registerPlugin( new Slick.AutoTooltips({ enableForHeaderCells: true }) );
+		
+		grid.setSelectionModel(new Slick.CellSelectionModel());
+
+		grid.onAddNewRow.subscribe(function (e, args) {
+		  var item = args.item;
+		  grid.invalidateRow(data.length);
+		  data.push(item);
+		  grid.updateRowCount();
+		  grid.render();
+		});
+	})	
+  })
+  
+
+</script>
+</body>
+</html>
